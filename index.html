@@ -1,0 +1,1786 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Devyatov Business - Задачник с синхронизацией</title>
+    <style>
+        /* Базовые стили */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        /* Шапка */
+        header {
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+            color: white;
+            padding: 20px 0;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .logo-icon {
+            background-color: white;
+            color: #1a1a1a;
+            width: 50px;
+            height: 50px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: 800;
+        }
+        
+        .logo-text h1 {
+            font-size: 28px;
+            margin-bottom: 5px;
+        }
+        
+        .logo-text p {
+            color: #aaa;
+            font-size: 14px;
+        }
+        
+        .sync-controls {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        
+        /* Кнопки */
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        .btn-primary {
+            background-color: #1a1a1a;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: #333;
+        }
+        
+        .btn-success {
+            background-color: #4CAF50;
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background-color: #45a049;
+        }
+        
+        .btn-warning {
+            background-color: #ff9800;
+            color: white;
+        }
+        
+        .btn-warning:hover {
+            background-color: #e68900;
+        }
+        
+        .btn-danger {
+            background-color: #f44336;
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background-color: #da190b;
+        }
+        
+        .btn-info {
+            background-color: #2196F3;
+            color: white;
+        }
+        
+        .btn-info:hover {
+            background-color: #0b7dda;
+        }
+        
+        .btn-block {
+            width: 100%;
+        }
+        
+        /* Основная навигация */
+        .main-nav {
+            background-color: white;
+            border-bottom: 1px solid #e0e0e0;
+            margin-bottom: 30px;
+        }
+        
+        .nav-tabs {
+            display: flex;
+            list-style: none;
+            flex-wrap: wrap;
+        }
+        
+        .nav-tab {
+            padding: 18px 25px;
+            cursor: pointer;
+            font-weight: 600;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+        }
+        
+        .nav-tab:hover {
+            background-color: #f9f9f9;
+        }
+        
+        .nav-tab.active {
+            border-bottom-color: #1a1a1a;
+            color: #1a1a1a;
+        }
+        
+        /* Основной контент */
+        .main-content {
+            display: flex;
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+        
+        @media (max-width: 1200px) {
+            .main-content {
+                flex-direction: column;
+            }
+        }
+        
+        /* Левая панель - Добавление задачи */
+        .left-panel {
+            flex: 0 0 350px;
+        }
+        
+        .panel-card {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            padding: 25px;
+            margin-bottom: 25px;
+        }
+        
+        .card-title {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+            color: #1a1a1a;
+        }
+        
+        /* Формы */
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #555;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 15px;
+            transition: border 0.3s;
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: #4CAF50;
+            box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.1);
+        }
+        
+        textarea.form-control {
+            min-height: 100px;
+            resize: vertical;
+        }
+        
+        .form-row {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .form-row .form-group {
+            flex: 1;
+        }
+        
+        @media (max-width: 768px) {
+            .form-row {
+                flex-direction: column;
+                gap: 0;
+            }
+        }
+        
+        /* Сферы */
+        .spheres-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .sphere-tag {
+            background-color: #f0f0f0;
+            padding: 8px 15px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .sphere-tag:hover {
+            background-color: #e0e0e0;
+        }
+        
+        .sphere-tag.active {
+            background-color: #4CAF50;
+            color: white;
+        }
+        
+        .sphere-color {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+        
+        .sphere-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        /* Центральная панель - Список задач */
+        .center-panel {
+            flex: 1;
+        }
+        
+        .tasks-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .tasks-container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .task-card {
+            background-color: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            border-left: 5px solid #ddd;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        .task-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        
+        .task-card.completed {
+            opacity: 0.8;
+            border-left-color: #4CAF50;
+        }
+        
+        .task-card.high-priority {
+            border-left-color: #f44336;
+        }
+        
+        .task-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 10px;
+        }
+        
+        .task-title {
+            font-weight: 700;
+            font-size: 18px;
+            margin-bottom: 5px;
+        }
+        
+        .task-sphere {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+        
+        .task-description {
+            color: #666;
+            margin-bottom: 15px;
+            line-height: 1.5;
+        }
+        
+        .task-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #eee;
+        }
+        
+        .task-responsible {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .responsible-avatar {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background-color: #e0e0e0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            color: #555;
+        }
+        
+        .task-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .task-date {
+            font-size: 13px;
+            color: #888;
+        }
+        
+        /* Правая панель - Аналитика */
+        .right-panel {
+            flex: 0 0 350px;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        
+        .stat-card {
+            background-color: white;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+        
+        .stat-value {
+            font-size: 28px;
+            font-weight: 800;
+            color: #1a1a1a;
+            margin: 10px 0;
+        }
+        
+        .stat-label {
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .kpi-progress {
+            height: 10px;
+            background-color: #f0f0f0;
+            border-radius: 5px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+        
+        .kpi-progress-bar {
+            height: 100%;
+            background-color: #4CAF50;
+            border-radius: 5px;
+            transition: width 0.5s;
+        }
+        
+        .chart-container {
+            height: 200px;
+            margin: 20px 0;
+            display: flex;
+            align-items: flex-end;
+            gap: 10px;
+        }
+        
+        .chart-bar {
+            flex: 1;
+            background-color: #4CAF50;
+            border-radius: 4px 4px 0 0;
+            position: relative;
+            min-height: 10px;
+        }
+        
+        .chart-label {
+            text-align: center;
+            font-size: 12px;
+            margin-top: 5px;
+            color: #666;
+        }
+        
+        /* Вкладка синхронизации */
+        .sync-instructions {
+            background-color: #e8f5e9;
+            border-left: 4px solid #4CAF50;
+            padding: 20px;
+            margin-bottom: 30px;
+            border-radius: 0 8px 8px 0;
+        }
+        
+        .sync-instructions h3 {
+            margin-bottom: 15px;
+            color: #1a1a1a;
+        }
+        
+        .sync-instructions ol {
+            margin-left: 20px;
+        }
+        
+        .sync-instructions li {
+            margin-bottom: 10px;
+        }
+        
+        .sync-actions {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-bottom: 30px;
+        }
+        
+        /* Уведомления */
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: #4CAF50;
+            color: white;
+            padding: 15px 25px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transform: translateX(150%);
+            transition: transform 0.3s;
+        }
+        
+        .notification.show {
+            transform: translateX(0);
+        }
+        
+        .notification.error {
+            background-color: #f44336;
+        }
+        
+        .notification.warning {
+            background-color: #ff9800;
+        }
+        
+        /* Подвал */
+        footer {
+            background-color: #1a1a1a;
+            color: #aaa;
+            padding: 30px 0;
+            margin-top: 50px;
+        }
+        
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        
+        .footer-links {
+            display: flex;
+            gap: 20px;
+        }
+        
+        .footer-links a {
+            color: #aaa;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+        
+        .footer-links a:hover {
+            color: white;
+        }
+        
+        /* Адаптивность */
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 20px;
+            }
+            
+            .sync-controls {
+                width: 100%;
+                justify-content: flex-start;
+            }
+            
+            .nav-tabs {
+                overflow-x: auto;
+            }
+            
+            .tasks-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .task-footer {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+            
+            .task-actions {
+                width: 100%;
+                justify-content: flex-start;
+            }
+            
+            .footer-content {
+                flex-direction: column;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Шапка -->
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <div class="logo-icon">DB</div>
+                    <div class="logo-text">
+                        <h1>Devyatov Business</h1>
+                        <p>Задачник с синхронизацией через файлы</p>
+                    </div>
+                </div>
+                <div class="sync-controls">
+                    <button id="save-btn" class="btn btn-success">
+                        <span>💾 Сохранить данные</span>
+                    </button>
+                    <button id="load-btn" class="btn btn-primary">
+                        <span>📂 Загрузить данные</span>
+                    </button>
+                    <button id="export-btn" class="btn btn-warning">
+                        <span>📄 Экспорт в Excel</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+    
+    <!-- Навигация -->
+    <nav class="main-nav">
+        <div class="container">
+            <ul class="nav-tabs">
+                <li class="nav-tab active" data-tab="tasks">Задачи</li>
+                <li class="nav-tab" data-tab="spheres">Управление сферами</li>
+                <li class="nav-tab" data-tab="analytics">Аналитика</li>
+                <li class="nav-tab" data-tab="sync">Синхронизация</li>
+            </ul>
+        </div>
+    </nav>
+    
+    <!-- Уведомления -->
+    <div id="notification" class="notification">
+        <span id="notification-text">Уведомление</span>
+    </div>
+    
+    <!-- Основной контент -->
+    <div class="container">
+        <!-- Вкладка Задачи -->
+        <div id="tasks-tab" class="tab-content active">
+            <div class="main-content">
+                <!-- Левая панель - Форма добавления задачи -->
+                <div class="left-panel">
+                    <div class="panel-card">
+                        <h2 class="card-title">Добавить новую задачу</h2>
+                        <form id="task-form">
+                            <div class="form-group">
+                                <label class="form-label" for="task-title">Название задачи</label>
+                                <input type="text" id="task-title" class="form-control" placeholder="Введите название задачи" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" for="task-description">Описание задачи</label>
+                                <textarea id="task-description" class="form-control" placeholder="Опишите детали задачи"></textarea>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label class="form-label" for="task-sphere">Сфера</label>
+                                    <select id="task-sphere" class="form-control" required>
+                                        <option value="">Выберите сферу</option>
+                                        <!-- Сферы будут добавлены динамически -->
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="task-priority">Приоритет</label>
+                                    <select id="task-priority" class="form-control">
+                                        <option value="normal">Обычный</option>
+                                        <option value="high">Высокий</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label class="form-label" for="task-responsible">Ответственный</label>
+                                    <input type="text" id="task-responsible" class="form-control" placeholder="Введите имя ответственного" required>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="task-deadline">Срок выполнения</label>
+                                    <input type="date" id="task-deadline" class="form-control" required>
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-primary btn-block">
+                                <span>➕ Добавить задачу</span>
+                            </button>
+                        </form>
+                    </div>
+                    
+                    <!-- Быстрый доступ к сферам -->
+                    <div class="panel-card">
+                        <h2 class="card-title">Сферы задач</h2>
+                        <div class="spheres-container" id="spheres-container">
+                            <!-- Сферы будут добавлены динамически -->
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Центральная панель - Список задач -->
+                <div class="center-panel">
+                    <div class="tasks-header">
+                        <h2 class="card-title">Список задач</h2>
+                        <div class="filters">
+                            <select id="filter-sphere" class="form-control filter-select">
+                                <option value="all">Все сферы</option>
+                                <!-- Сферы будут добавлены динамически -->
+                            </select>
+                            <select id="filter-status" class="form-control filter-select">
+                                <option value="all">Все задачи</option>
+                                <option value="active">Только активные</option>
+                                <option value="completed">Только выполненные</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="tasks-container" id="tasks-container">
+                        <!-- Задачи будут добавлены динамически -->
+                        <div class="task-card empty-state">
+                            <p style="text-align: center; color: #888; padding: 40px 20px;">
+                                Задач пока нет. Добавьте первую задачу с помощью формы слева.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Правая панель - Аналитика -->
+                <div class="right-panel">
+                    <div class="panel-card">
+                        <h2 class="card-title">Статистика выполнения</h2>
+                        
+                        <div class="stats-grid">
+                            <div class="stat-card">
+                                <div class="stat-value" id="total-tasks">0</div>
+                                <div class="stat-label">Всего задач</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-value" id="completed-tasks">0</div>
+                                <div class="stat-label">Выполнено</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-value" id="active-tasks">0</div>
+                                <div class="stat-label">В работе</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-value" id="completion-rate">0%</div>
+                                <div class="stat-label">Эффективность</div>
+                            </div>
+                        </div>
+                        
+                        <div class="kpi-progress">
+                            <div id="kpi-progress-bar" class="kpi-progress-bar" style="width: 0%"></div>
+                        </div>
+                        
+                        <h3 style="margin-bottom: 15px;">Задачи по сферам</h3>
+                        <div class="chart-container" id="chart-container">
+                            <!-- График будет добавлен динамически -->
+                        </div>
+                    </div>
+                    
+                    <div class="panel-card">
+                        <h2 class="card-title">Ответственные</h2>
+                        <div id="responsible-list">
+                            <!-- Список ответственных будет добавлен динамически -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Вкладка Управление сферами -->
+        <div id="spheres-tab" class="tab-content">
+            <div class="main-content">
+                <div class="panel-card" style="flex: 1;">
+                    <h2 class="card-title">Управление сферами</h2>
+                    <p style="margin-bottom: 20px;">Здесь вы можете добавлять, редактировать и удалять сферы деятельности.</p>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label" for="new-sphere-name">Название сферы</label>
+                            <input type="text" id="new-sphere-name" class="form-control" placeholder="Например: Маркетинг">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="new-sphere-color">Цвет сферы</label>
+                            <input type="color" id="new-sphere-color" class="form-control" value="#4CAF50" style="height: 46px; padding: 5px;">
+                        </div>
+                    </div>
+                    
+                    <div class="sphere-actions">
+                        <button id="add-sphere-btn" class="btn btn-success">
+                            <span>➕ Добавить сферу</span>
+                        </button>
+                        <button id="clear-spheres-btn" class="btn btn-danger">
+                            <span>🗑️ Удалить все сферы</span>
+                        </button>
+                    </div>
+                    
+                    <div class="spheres-container" id="spheres-management-container" style="margin-top: 30px;">
+                        <!-- Сферы будут добавлены динамически -->
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Вкладка Аналитика -->
+        <div id="analytics-tab" class="tab-content">
+            <div class="main-content">
+                <div class="panel-card" style="flex: 1;">
+                    <h2 class="card-title">Подробная аналитика KPI</h2>
+                    
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 25px; margin-top: 30px;">
+                        <div>
+                            <h3>Эффективность по сферам</h3>
+                            <div id="sphere-efficiency-list">
+                                <!-- Эффективность по сферам будет добавлена динамически -->
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <h3>Эффективность по ответственным</h3>
+                            <div id="responsible-efficiency-list">
+                                <!-- Эффективность по ответственным будет добавлена динамически -->
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div style="margin-top: 40px;">
+                        <h3>Тенденции выполнения задач</h3>
+                        <div id="trends-container" style="height: 200px; margin-top: 20px;">
+                            <!-- График тенденций будет добавлен динамически -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Вкладка Синхронизация -->
+        <div id="sync-tab" class="tab-content">
+            <div class="sync-instructions">
+                <h3>📚 Инструкция по синхронизации данных</h3>
+                <ol>
+                    <li><strong>Сохраните данные</strong> - нажмите кнопку "Сохранить данные" в шапке, чтобы скачать файл с данными</li>
+                    <li><strong>Отправьте файл</strong> коллегам через Telegram, email или любой удобный способ</li>
+                    <li><strong>Загрузите данные</strong> - когда получите файл от коллеги, нажмите "Загрузить данные" и выберите файл</li>
+                    <li><strong>Экспорт в Excel</strong> - для отчетов можно экспортировать данные в Excel-файл</li>
+                </ol>
+            </div>
+            
+            <div class="panel-card">
+                <h2 class="card-title">Управление данными</h2>
+                
+                <div class="sync-actions">
+                    <button id="backup-btn" class="btn btn-primary">
+                        <span>💾 Создать резервную копию</span>
+                    </button>
+                    <button id="restore-btn" class="btn btn-warning">
+                        <span>🔄 Восстановить из резервной копии</span>
+                    </button>
+                    <button id="clear-all-btn" class="btn btn-danger">
+                        <span>🗑️ Очистить все данные</span>
+                    </button>
+                </div>
+                
+                <div style="margin-top: 30px;">
+                    <h3>Статистика данных</h3>
+                    <div class="stats-grid" style="margin-top: 20px;">
+                        <div class="stat-card">
+                            <div class="stat-value" id="data-tasks-count">0</div>
+                            <div class="stat-label">Задач в системе</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="data-spheres-count">0</div>
+                            <div class="stat-label">Сфер деятельности</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="data-users-count">0</div>
+                            <div class="stat-label">Уникальных ответственных</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="data-last-update">-</div>
+                            <div class="stat-label">Последнее обновление</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Подвал -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div>
+                    <p>Devyatov Business Workspace • Задачник с синхронизацией через файлы</p>
+                    <p style="font-size: 14px; margin-top: 5px;">Данные сохраняются локально в вашем браузере</p>
+                </div>
+                <div class="footer-links">
+                    <a href="#" id="export-help">Инструкция по экспорту</a>
+                    <a href="#" id="reset-data">Сбросить данные</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+    
+    <!-- Скрытый input для загрузки файлов -->
+    <input type="file" id="file-input" accept=".json" style="display: none;">
+    <input type="file" id="excel-input" accept=".xlsx,.xls" style="display: none;">
+    
+    <!-- JavaScript -->
+    <script>
+        // Основной объект приложения
+        const DevyatovApp = {
+            // Инициализация
+            init() {
+                console.log("Devyatov Business App инициализирован");
+                this.loadData();
+                this.setupEventListeners();
+                this.renderAll();
+                this.showNotification("Приложение готово к работе!", "success");
+            },
+            
+            // Данные
+            data: {
+                tasks: [],
+                spheres: [
+                    { id: 1, name: "Маркетинг", color: "#4CAF50", tasks: 0, completed: 0 },
+                    { id: 2, name: "Продажи", color: "#2196F3", tasks: 0, completed: 0 },
+                    { id: 3, name: "Финансы", color: "#FF9800", tasks: 0, completed: 0 },
+                    { id: 4, name: "Операции", color: "#9C27B0", tasks: 0, completed: 0 },
+                    { id: 5, name: "IT", color: "#3F51B5", tasks: 0, completed: 0 },
+                    { id: 6, name: "HR", color: "#00BCD4", tasks: 0, completed: 0 },
+                    { id: 7, name: "Юридический", color: "#795548", tasks: 0, completed: 0 },
+                    { id: 8, name: "Аналитика", color: "#607D8B", tasks: 0, completed: 0 },
+                    { id: 9, name: "Разработка", color: "#FF5722", tasks: 0, completed: 0 },
+                    { id: 10, name: "Дизайн", color: "#E91E63", tasks: 0, completed: 0 },
+                    { id: 11, name: "Консалтинг", color: "#8BC34A", tasks: 0, completed: 0 }
+                ],
+                lastUpdate: new Date().toISOString()
+            },
+            
+            // Загрузка данных из localStorage
+            loadData() {
+                const savedData = localStorage.getItem('devyatovData');
+                if (savedData) {
+                    try {
+                        const parsedData = JSON.parse(savedData);
+                        this.data.tasks = parsedData.tasks || [];
+                        this.data.spheres = parsedData.spheres || this.data.spheres;
+                        this.data.lastUpdate = parsedData.lastUpdate || new Date().toISOString();
+                        console.log("Данные загружены из localStorage");
+                    } catch (e) {
+                        console.error("Ошибка загрузки данных:", e);
+                    }
+                }
+            },
+            
+            // Сохранение данных в localStorage
+            saveData() {
+                this.data.lastUpdate = new Date().toISOString();
+                localStorage.setItem('devyatovData', JSON.stringify(this.data));
+                console.log("Данные сохранены в localStorage");
+            },
+            
+            // Настройка обработчиков событий
+            setupEventListeners() {
+                // Форма добавления задачи
+                document.getElementById('task-form').addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    this.addTask();
+                });
+                
+                // Кнопка добавления сферы
+                document.getElementById('add-sphere-btn').addEventListener('click', () => {
+                    this.addSphere();
+                });
+                
+                // Кнопка удаления всех сфер
+                document.getElementById('clear-spheres-btn').addEventListener('click', () => {
+                    if (confirm("Вы уверены, что хотите удалить все сферы? Все задачи останутся, но будут без сферы.")) {
+                        this.data.spheres = [];
+                        this.saveData();
+                        this.renderAll();
+                        this.showNotification("Все сферы удалены", "warning");
+                    }
+                });
+                
+                // Кнопка сохранения данных
+                document.getElementById('save-btn').addEventListener('click', () => {
+                    this.downloadData();
+                });
+                
+                // Кнопка загрузки данных
+                document.getElementById('load-btn').addEventListener('click', () => {
+                    document.getElementById('file-input').click();
+                });
+                
+                // Обработка загрузки файла
+                document.getElementById('file-input').addEventListener('change', (e) => {
+                    this.uploadData(e.target.files[0]);
+                });
+                
+                // Кнопка экспорта в Excel
+                document.getElementById('export-btn').addEventListener('click', () => {
+                    this.exportToExcel();
+                });
+                
+                // Кнопки навигации
+                document.querySelectorAll('.nav-tab').forEach(tab => {
+                    tab.addEventListener('click', () => {
+                        const tabId = tab.getAttribute('data-tab');
+                        this.switchTab(tabId);
+                    });
+                });
+                
+                // Фильтры задач
+                document.getElementById('filter-sphere').addEventListener('change', () => {
+                    this.renderTasks();
+                });
+                
+                document.getElementById('filter-status').addEventListener('change', () => {
+                    this.renderTasks();
+                });
+                
+                // Кнопка создания резервной копии
+                document.getElementById('backup-btn').addEventListener('click', () => {
+                    this.downloadData(true);
+                });
+                
+                // Кнопка восстановления из резервной копии
+                document.getElementById('restore-btn').addEventListener('click', () => {
+                    document.getElementById('file-input').click();
+                });
+                
+                // Кнопка очистки всех данных
+                document.getElementById('clear-all-btn').addEventListener('click', () => {
+                    if (confirm("ВНИМАНИЕ! Это удалит ВСЕ задачи и сферы. Вы уверены?")) {
+                        this.clearAllData();
+                    }
+                });
+                
+                // Инструкция по экспорту
+                document.getElementById('export-help').addEventListener('click', (e) => {
+                    e.preventDefault();
+                    this.switchTab('sync');
+                    this.showNotification("Открыта вкладка 'Синхронизация' с инструкцией", "info");
+                });
+                
+                // Сброс данных
+                document.getElementById('reset-data').addEventListener('click', (e) => {
+                    e.preventDefault();
+                    if (confirm("Сбросить все данные к начальным значениям?")) {
+                        this.resetToDefault();
+                    }
+                });
+            },
+            
+            // Переключение вкладок
+            switchTab(tabId) {
+                // Скрыть все вкладки
+                document.querySelectorAll('.tab-content').forEach(tab => {
+                    tab.classList.remove('active');
+                });
+                
+                // Убрать активный класс со всех вкладок навигации
+                document.querySelectorAll('.nav-tab').forEach(tab => {
+                    tab.classList.remove('active');
+                });
+                
+                // Показать выбранную вкладку
+                document.getElementById(`${tabId}-tab`).classList.add('active');
+                
+                // Активировать соответствующую вкладку в навигации
+                document.querySelector(`.nav-tab[data-tab="${tabId}"]`).classList.add('active');
+                
+                // Обновить данные на вкладке синхронизации
+                if (tabId === 'sync') {
+                    this.updateSyncStats();
+                }
+            },
+            
+            // Добавление задачи
+            addTask() {
+                const title = document.getElementById('task-title').value.trim();
+                const description = document.getElementById('task-description').value.trim();
+                const sphereId = parseInt(document.getElementById('task-sphere').value);
+                const priority = document.getElementById('task-priority').value;
+                const responsible = document.getElementById('task-responsible').value.trim();
+                const deadline = document.getElementById('task-deadline').value;
+                
+                if (!title || !sphereId || !responsible || !deadline) {
+                    this.showNotification("Заполните все обязательные поля", "error");
+                    return;
+                }
+                
+                const newTask = {
+                    id: Date.now(),
+                    title,
+                    description,
+                    sphereId,
+                    priority,
+                    responsible,
+                    deadline,
+                    completed: false,
+                    createdAt: new Date().toISOString()
+                };
+                
+                this.data.tasks.push(newTask);
+                this.saveData();
+                this.renderAll();
+                this.showNotification(`Задача "${title}" добавлена`, "success");
+                
+                // Сброс формы
+                document.getElementById('task-form').reset();
+                document.getElementById('task-deadline').valueAsDate = new Date();
+            },
+            
+            // Добавление сферы
+            addSphere() {
+                const name = document.getElementById('new-sphere-name').value.trim();
+                const color = document.getElementById('new-sphere-color').value;
+                
+                if (!name) {
+                    this.showNotification("Введите название сферы", "error");
+                    return;
+                }
+                
+                // Проверка на дубликат
+                if (this.data.spheres.some(sphere => sphere.name.toLowerCase() === name.toLowerCase())) {
+                    this.showNotification("Сфера с таким названием уже существует", "error");
+                    return;
+                }
+                
+                const newSphere = {
+                    id: Date.now(),
+                    name,
+                    color,
+                    tasks: 0,
+                    completed: 0
+                };
+                
+                this.data.spheres.push(newSphere);
+                this.saveData();
+                this.renderAll();
+                this.showNotification(`Сфера "${name}" добавлена`, "success");
+                
+                // Сброс формы
+                document.getElementById('new-sphere-name').value = '';
+            },
+            
+            // Удаление сферы
+            deleteSphere(sphereId) {
+                if (confirm("Удалить эту сферу? Задачи в этой сфере останутся, но будут отображаться без сферы.")) {
+                    this.data.spheres = this.data.spheres.filter(sphere => sphere.id !== sphereId);
+                    this.saveData();
+                    this.renderAll();
+                    this.showNotification("Сфера удалена", "warning");
+                }
+            },
+            
+            // Изменение статуса задачи
+            toggleTaskStatus(taskId) {
+                const task = this.data.tasks.find(t => t.id === taskId);
+                if (task) {
+                    task.completed = !task.completed;
+                    task.completedAt = task.completed ? new Date().toISOString() : null;
+                    this.saveData();
+                    this.renderAll();
+                    this.showNotification(
+                        task.completed ? `Задача "${task.title}" выполнена` : `Задача "${task.title}" возвращена в работу`,
+                        task.completed ? "success" : "warning"
+                    );
+                }
+            },
+            
+            // Удаление задачи
+            deleteTask(taskId) {
+                if (confirm("Удалить эту задачу?")) {
+                    const taskIndex = this.data.tasks.findIndex(t => t.id === taskId);
+                    if (taskIndex !== -1) {
+                        const taskTitle = this.data.tasks[taskIndex].title;
+                        this.data.tasks.splice(taskIndex, 1);
+                        this.saveData();
+                        this.renderAll();
+                        this.showNotification(`Задача "${taskTitle}" удалена`, "warning");
+                    }
+                }
+            },
+            
+            // Обновление статистики
+            updateStats() {
+                const totalTasks = this.data.tasks.length;
+                const completedTasks = this.data.tasks.filter(task => task.completed).length;
+                const activeTasks = totalTasks - completedTasks;
+                const completionRate = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
+                
+                // Обновление счетчиков в шапке
+                document.getElementById('total-tasks').textContent = totalTasks;
+                document.getElementById('completed-tasks').textContent = completedTasks;
+                document.getElementById('active-tasks').textContent = activeTasks;
+                document.getElementById('completion-rate').textContent = `${completionRate}%`;
+                
+                // Обновление прогресс-бара
+                document.getElementById('kpi-progress-bar').style.width = `${completionRate}%`;
+                
+                // Обновление статистики на вкладке синхронизации
+                this.updateSyncStats();
+                
+                // Обновление данных по сферам
+                this.updateSphereStats();
+                
+                // Обновление графиков
+                this.renderCharts();
+            },
+            
+            // Обновление статистики сфер
+            updateSphereStats() {
+                // Сброс счетчиков сфер
+                this.data.spheres.forEach(sphere => {
+                    sphere.tasks = 0;
+                    sphere.completed = 0;
+                });
+                
+                // Подсчет задач по сферам
+                this.data.tasks.forEach(task => {
+                    const sphere = this.data.spheres.find(s => s.id === task.sphereId);
+                    if (sphere) {
+                        sphere.tasks++;
+                        if (task.completed) {
+                            sphere.completed++;
+                        }
+                    }
+                });
+            },
+            
+            // Обновление статистики синхронизации
+            updateSyncStats() {
+                document.getElementById('data-tasks-count').textContent = this.data.tasks.length;
+                document.getElementById('data-spheres-count').textContent = this.data.spheres.length;
+                
+                // Подсчет уникальных ответственных
+                const responsibles = [...new Set(this.data.tasks.map(task => task.responsible))];
+                document.getElementById('data-users-count').textContent = responsibles.length;
+                
+                // Форматирование даты последнего обновления
+                const lastUpdate = new Date(this.data.lastUpdate);
+                const formattedDate = lastUpdate.toLocaleDateString('ru-RU', {
+                    day: '2-digit',
+                    month: '2-digit',
+                    year: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+                document.getElementById('data-last-update').textContent = formattedDate;
+            },
+            
+            // Рендеринг всех компонентов
+            renderAll() {
+                this.renderSpheres();
+                this.renderTasks();
+                this.updateStats();
+                this.renderResponsibles();
+                this.renderAnalytics();
+            },
+            
+            // Рендеринг сфер
+            renderSpheres() {
+                const spheresContainer = document.getElementById('spheres-container');
+                const spheresManagementContainer = document.getElementById('spheres-management-container');
+                const taskSphereSelect = document.getElementById('task-sphere');
+                const filterSphereSelect = document.getElementById('filter-sphere');
+                
+                // Очистка контейнеров
+                spheresContainer.innerHTML = '';
+                spheresManagementContainer.innerHTML = '';
+                
+                // Очистка и заполнение выпадающих списков
+                taskSphereSelect.innerHTML = '<option value="">Выберите сферу</option>';
+                filterSphereSelect.innerHTML = '<option value="all">Все сферы</option>';
+                
+                // Рендеринг каждой сферы
+                this.data.spheres.forEach(sphere => {
+                    // Создание элемента сферы для контейнера
+                    const sphereElement = document.createElement('div');
+                    sphereElement.className = 'sphere-tag';
+                    sphereElement.style.backgroundColor = sphere.color + '20'; // Добавляем прозрачность
+                    sphereElement.style.border = `1px solid ${sphere.color}`;
+                    sphereElement.innerHTML = `
+                        <div class="sphere-color" style="background-color: ${sphere.color}"></div>
+                        <span>${sphere.name}</span>
+                        <span style="margin-left: auto; font-size: 12px;">${sphere.tasks}</span>
+                    `;
+                    sphereElement.addEventListener('click', () => {
+                        // Фильтрация задач по выбранной сфере
+                        document.getElementById('filter-sphere').value = sphere.id;
+                        this.renderTasks();
+                    });
+                    spheresContainer.appendChild(sphereElement);
+                    
+                    // Создание элемента сферы для управления
+                    const managementElement = document.createElement('div');
+                    managementElement.className = 'sphere-tag';
+                    managementElement.style.backgroundColor = sphere.color + '20';
+                    managementElement.style.border = `1px solid ${sphere.color}`;
+                    managementElement.innerHTML = `
+                        <div class="sphere-color" style="background-color: ${sphere.color}"></div>
+                        <span>${sphere.name}</span>
+                        <span style="margin-left: auto; font-size: 12px;">${sphere.tasks} задач</span>
+                        <button class="btn btn-danger" style="padding: 4px 8px; font-size: 12px;" data-sphere-id="${sphere.id}">Удалить</button>
+                    `;
+                    
+                    // Обработчик удаления сферы
+                    const deleteBtn = managementElement.querySelector('button');
+                    deleteBtn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        this.deleteSphere(sphere.id);
+                    });
+                    
+                    spheresManagementContainer.appendChild(managementElement);
+                    
+                    // Добавление в выпадающие списки
+                    const option1 = document.createElement('option');
+                    option1.value = sphere.id;
+                    option1.textContent = sphere.name;
+                    taskSphereSelect.appendChild(option1);
+                    
+                    const option2 = document.createElement('option');
+                    option2.value = sphere.id;
+                    option2.textContent = sphere.name;
+                    filterSphereSelect.appendChild(option2);
+                });
+            },
+            
+            // Рендеринг задач
+            renderTasks() {
+                const tasksContainer = document.getElementById('tasks-container');
+                const filterSphere = document.getElementById('filter-sphere').value;
+                const filterStatus = document.getElementById('filter-status').value;
+                
+                // Фильтрация задач
+                let filteredTasks = this.data.tasks;
+                
+                if (filterSphere !== 'all') {
+                    filteredTasks = filteredTasks.filter(task => task.sphereId === parseInt(filterSphere));
+                }
+                
+                if (filterStatus === 'active') {
+                    filteredTasks = filteredTasks.filter(task => !task.completed);
+                } else if (filterStatus === 'completed') {
+                    filteredTasks = filteredTasks.filter(task => task.completed);
+                }
+                
+                // Сортировка задач (сначала невыполненные, потом выполненные)
+                filteredTasks.sort((a, b) => {
+                    if (a.completed && !b.completed) return 1;
+                    if (!a.completed && b.completed) return -1;
+                    return new Date(b.createdAt) - new Date(a.createdAt);
+                });
+                
+                // Очистка контейнера
+                tasksContainer.innerHTML = '';
+                
+                if (filteredTasks.length === 0) {
+                    const emptyState = document.createElement('div');
+                    emptyState.className = 'task-card empty-state';
+                    emptyState.innerHTML = `
+                        <p style="text-align: center; color: #888; padding: 40px 20px;">
+                            Задач по выбранным фильтрам не найдено.
+                        </p>
+                    `;
+                    tasksContainer.appendChild(emptyState);
+                    return;
+                }
+                
+                // Рендеринг каждой задачи
+                filteredTasks.forEach(task => {
+                    const sphere = this.data.spheres.find(s => s.id === task.sphereId);
+                    const taskElement = document.createElement('div');
+                    taskElement.className = `task-card ${task.completed ? 'completed' : ''} ${task.priority === 'high' ? 'high-priority' : ''}`;
+                    
+                    // Форматирование даты
+                    const deadline = new Date(task.deadline);
+                    const formattedDeadline = deadline.toLocaleDateString('ru-RU', {
+                        day: '2-digit',
+                        month: '2-digit',
+                        year: 'numeric'
+                    });
+                    
+                    // Определение цвета сферы
+                    const sphereColor = sphere ? sphere.color : '#999';
+                    const sphereName = sphere ? sphere.name : 'Без сферы';
+                    
+                    taskElement.innerHTML = `
+                        <div class="task-header">
+                            <div>
+                                <div class="task-title">${task.title}</div>
+                                <div class="task-sphere" style="background-color: ${sphereColor}20; color: ${sphereColor}; border: 1px solid ${sphereColor}">${sphereName}</div>
+                            </div>
+                            <div class="task-actions">
+                                <button class="btn ${task.completed ? 'btn-warning' : 'btn-success'}" style="padding: 6px 12px;" data-task-id="${task.id}">
+                                    ${task.completed ? '↩️ Вернуть' : '✓ Выполнить'}
+                                </button>
+                                <button class="btn btn-danger" style="padding: 6px 12px;" data-task-id="${task.id}">🗑️</button>
+                            </div>
+                        </div>
+                        ${task.description ? `<div class="task-description">${task.description}</div>` : ''}
+                        <div class="task-footer">
+                            <div class="task-responsible">
+                                <div class="responsible-avatar">${task.responsible.charAt(0).toUpperCase()}</div>
+                                <div>
+                                    <div style="font-weight: 600;">${task.responsible}</div>
+                                    <div class="task-date">Срок: ${formattedDeadline}</div>
+                                </div>
+                            </div>
+                            <div class="task-date">
+                                ${task.completed ? `Выполнено: ${new Date(task.completedAt).toLocaleDateString('ru-RU')}` : ''}
+                            </div>
+                        </div>
+                    `;
+                    
+                    // Обработчики событий для кнопок
+                    const completeBtn = taskElement.querySelector(`button[data-task-id="${task.id}"]:not(.btn-danger)`);
+                    const deleteBtn = taskElement.querySelector(`button.btn-danger[data-task-id="${task.id}"]`);
+                    
+                    completeBtn.addEventListener('click', () => {
+                        this.toggleTaskStatus(task.id);
+                    });
+                    
+                    deleteBtn.addEventListener('click', () => {
+                        this.deleteTask(task.id);
+                    });
+                    
+                    tasksContainer.appendChild(taskElement);
+                });
+            },
+            
+            // Рендеринг ответственных
+            renderResponsibles() {
+                const responsibleList = document.getElementById('responsible-list');
+                responsibleList.innerHTML = '';
+                
+                // Группировка задач по ответственным
+                const responsibleMap = {};
+                this.data.tasks.forEach(task => {
+                    if (!responsibleMap[task.responsible]) {
+                        responsibleMap[task.responsible] = {
+                            total: 0,
+                            completed: 0
+                        };
+                    }
+                    responsibleMap[task.responsible].total++;
+                    if (task.completed) {
+                        responsibleMap[task.responsible].completed++;
+                    }
+                });
+                
+                // Сортировка по количеству задач
+                const sortedResponsibles = Object.entries(responsibleMap)
+                    .sort((a, b) => b[1].total - a[1].total);
+                
+                // Рендеринг
+                sortedResponsibles.forEach(([name, stats]) => {
+                    const completionRate = stats.total > 0 ? Math.round((stats.completed / stats.total) * 100) : 0;
+                    
+                    const item = document.createElement('div');
+                    item.className = 'sphere-list-item';
+                    item.innerHTML = `
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <div class="responsible-avatar">${name.charAt(0).toUpperCase()}</div>
+                            <div>
+                                <div style="font-weight: 600;">${name}</div>
+                                <div style="font-size: 12px; color: #888;">${stats.completed}/${stats.total} выполнено</div>
+                            </div>
+                        </div>
+                        <div style="font-weight: 700; color: ${completionRate >= 80 ? '#4CAF50' : completionRate >= 50 ? '#FF9800' : '#f44336'}">
+                            ${completionRate}%
+                        </div>
+                    `;
+                    responsibleList.appendChild(item);
+                });
+            },
+            
+            // Рендеринг графиков
+            renderCharts() {
+                const chartContainer = document.getElementById('chart-container');
+                chartContainer.innerHTML = '';
+                
+                // Фильтруем сферы, у которых есть задачи
+                const spheresWithTasks = this.data.spheres.filter(sphere => sphere.tasks > 0);
+                
+                if (spheresWithTasks.length === 0) {
+                    chartContainer.innerHTML = '<p style="text-align: center; color: #888; padding: 20px;">Нет данных для отображения</p>';
+                    return;
+                }
+                
+                // Находим максимальное количество задач для масштабирования
+                const maxTasks = Math.max(...spheresWithTasks.map(sphere => sphere.tasks));
+                
+                // Создаем столбцы диаграммы
+                spheresWithTasks.forEach(sphere => {
+                    const barHeight = maxTasks > 0 ? (sphere.tasks / maxTasks * 160) : 10;
+                    
+                    const barContainer = document.createElement('div');
+                    barContainer.style.display = 'flex';
+                    barContainer.style.flexDirection = 'column';
+                    barContainer.style.alignItems = 'center';
+                    barContainer.style.flex = '1';
+                    
+                    const bar = document.createElement('div');
+                    bar.className = 'chart-bar';
+                    bar.style.height = `${barHeight}px`;
+                    bar.style.backgroundColor = sphere.color;
+                    bar.title = `${sphere.name}: ${sphere.tasks} задач`;
+                    
+                    const label = document.createElement('div');
+                    label.className = 'chart-label';
+                    label.textContent = sphere.name.length > 10 ? sphere.name.substring(0, 8) + '...' : sphere.name;
+                    
+                    barContainer.appendChild(bar);
+                    barContainer.appendChild(label);
+                    chartContainer.appendChild(barContainer);
+                });
+            },
+            
+            // Рендеринг аналитики
+            renderAnalytics() {
+                this.renderSphereEfficiency();
+                this.renderResponsibleEfficiency();
+            },
+            
+            // Рендеринг эффективности по сферам
+            renderSphereEfficiency() {
+                const container = document.getElementById('sphere-efficiency-list');
+                container.innerHTML = '';
+                
+                // Фильтруем сферы с задачами
+                const spheresWithTasks = this.data.spheres.filter(sphere => sphere.tasks > 0);
+                
+                if (spheresWithTasks.length === 0) {
+                    container.innerHTML = '<p style="color: #888; text-align: center; padding: 20px;">Нет данных</p>';
+                    return;
+                }
+                
+                // Сортировка по эффективности
+                spheresWithTasks.sort((a, b) => {
+                    const rateA = a.tasks > 0 ? (a.completed / a.tasks) * 100 : 0;
+                    const rateB = b.tasks > 0 ? (b.completed / b.tasks) * 100 : 0;
+                    return rateB - rateA;
+                });
+                
+                // Рендеринг
+                spheresWithTasks.forEach(sphere => {
+                    const completionRate = sphere.tasks > 0 ? Math.round((sphere.completed / sphere.tasks) * 100) : 0;
+                    
+                    const item = document.createElement('div');
+                    item.className = 'sphere-list-item';
+                    item.innerHTML = `
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <div class="sphere-color" style="background-color: ${sphere.color}"></div>
+                            <div>
+                                <div style="font-weight: 600;">${sphere.name}</div>
+                                <div style="font-size: 12px; color: #888;">${sphere.completed}/${sphere.tasks} выполнено</div>
+                            </div>
+                        </div>
+                        <div style="font-weight: 700; color: ${completionRate >= 80 ? '#4CAF50' : completionRate >= 50 ? '#FF9800' : '#f44336'}">
+                            ${completionRate}%
+                        </div>
+                    `;
+                    container.appendChild(item);
+                });
+            },
+            
+            // Рендеринг эффективности по ответственным
+            renderResponsibleEfficiency() {
+                const container = document.getElementById('responsible-efficiency-list');
+                container.innerHTML = '';
+                
+                // Группировка задач по ответственным
+                const responsibleMap = {};
+                this.data.tasks.forEach(task => {
+                    if (!responsibleMap[task.responsible]) {
+                        responsibleMap[task.responsible] = {
+                            total: 0,
+                            completed: 0
+                        };
+                    }
+                    responsibleMap[task.responsible].total++;
+                    if (task.completed) {
+                        responsibleMap[task.responsible].completed++;
+                    }
+                });
+                
+                if (Object.keys(responsibleMap).length === 0) {
+                    container.innerHTML = '<p style="color: #888; text-align: center; padding: 20px;">Нет данных</p>';
+                    return;
+                }
+                
+                // Сортировка по эффективности
+                const sortedResponsibles = Object.entries(responsibleMap)
+                    .sort((a, b) => {
+                        const rateA = a[1].total > 0 ? (a[1].completed / a[1].total) * 100 : 0;
+                        const rateB = b[1].total > 0 ? (b[1].completed / b[1].total) * 100 : 0;
+                        return rateB - rateA;
+                    });
+                
+                // Рендеринг
+                sortedResponsibles.forEach(([name, stats]) => {
+                    const completionRate = stats.total > 0 ? Math.round((stats.completed / stats.total) * 100) : 0;
+                    
+                    const item = document.createElement('div');
+                    item.className = 'sphere-list-item';
+                    item.innerHTML = `
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <div class="responsible-avatar">${name.charAt(0).toUpperCase()}</div>
+                            <div>
+                                <div style="font-weight: 600;">${name}</div>
+                                <div style="font-size: 12px; color: #888;">${stats.completed}/${stats.total} выполнено</div>
+                            </div>
+                        </div>
+                        <div style="font-weight: 700; color: ${completionRate >= 80 ? '#4CAF50' : completionRate >= 50 ? '#FF9800' : '#f44336'}">
+                            ${completionRate}%
+                        </div>
+                    `;
+                    container.appendChild(item);
+                });
+            },
+            
+            // Скачивание данных в JSON файл
+            downloadData(isBackup = false) {
+                const dataStr = JSON.stringify(this.data, null, 2);
+                const dataBlob = new Blob([dataStr], { type: 'application/json' });
+                const url = URL.createObjectURL(dataBlob);
+                
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = isBackup 
+                    ? `devyatov-backup-${new Date().toISOString().split('T')[0]}.json`
+                    : 'devyatov-data.json';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                
+                this.showNotification(
+                    isBackup ? "Резервная копия создана" : "Данные сохранены в файл",
+                    "success"
+                );
+            },
+            
+            // Загрузка данных из JSON файла
+            uploadData(file) {
+                if (!file) return;
+                
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    try {
+                        const uploadedData = JSON.parse(e.target.result);
+                        
+                        // Проверка структуры данных
+                        if (!uploadedData.tasks || !uploadedData.spheres) {
+                            throw new Error("Неверный формат файла");
+                        }
+                        
+                        // Замена текущих данных
+                        this.data.tasks = uploadedData.tasks;
+                        this.data.spheres = uploadedData.spheres;
+                        this.data.lastUpdate = uploadedData.lastUpdate || new Date().toISOString();
+                        
+                        this.saveData();
+                        this.renderAll();
+                        this.showNotification("Данные успешно загружены", "success");
+                    } catch (error) {
+                        console.error("Ошибка загрузки данных:", error);
+                        this.showNotification("Ошибка загрузки файла. Проверьте формат.", "error");
+                    }
+                };
+                reader.readAsText(file);
+                
+                // Сброс input
+                document.getElementById('file-input').value = '';
+            },
+            
+            // Экспорт в Excel (CSV для простоты)
+            exportToExcel() {
+                if (this.data.tasks.length === 0) {
+                    this.showNotification("Нет данных для экспорта", "warning");
+                    return;
+                }
+                
+                // Создание CSV
+                let csv = "ID;Название;Описание;Сфера;Ответственный;Приоритет;Срок;Статус;Дата создания\n";
+                
+                this.data.tasks.forEach(task => {
+                    const sphere = this.data.spheres.find(s => s.id === task.sphereId);
+                    const sphereName = sphere ? sphere.name : 'Без сферы';
+                    const status = task.completed ? 'Выполнено' : 'В работе';
+                    const createdAt = new Date(task.createdAt).toLocaleDateString('ru-RU');
+                    const deadline = new Date(task.deadline).toLocaleDateString('ru-RU');
+                    
+                    // Экранирование кавычек и специальных символов
+                    const title = `"${task.title.replace(/"/g, '""')}"`;
+                    const description = `"${task.description ? task.description.replace(/"/g, '""') : ''}"`;
+                    
+                    csv += `${task.id};${title};${description};${sphereName};${task.responsible};${task.priority};${deadline};${status};${createdAt}\n`;
+                });
+                
+                // Создание и скачивание файла
+                const blob = new Blob(["\uFEFF" + csv], { type: 'text/csv;charset=utf-8;' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `devyatov-tasks-${new Date().toISOString().split('T')[0]}.csv`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                
+                this.showNotification("Данные экспортированы в CSV файл", "success");
+            },
+            
+            // Очистка всех данных
+            clearAllData() {
+                this.data.tasks = [];
+                this.data.spheres = [];
+                this.data.lastUpdate = new Date().toISOString();
+                this.saveData();
+                this.renderAll();
+                this.showNotification("Все данные очищены", "warning");
+            },
+            
+            // Сброс к начальным значениям
+            resetToDefault() {
+                this.data.tasks = [];
+                this.data.spheres = [
+                    { id: 1, name: "Маркетинг", color: "#4CAF50", tasks: 0, completed: 0 },
+                    { id: 2, name: "Продажи", color: "#2196F3", tasks: 0, completed: 0 },
+                    { id: 3, name: "Финансы", color: "#FF9800", tasks: 0, completed: 0 },
+                    { id: 4, name: "Операции", color: "#9C27B0", tasks: 0, completed: 0 },
+                    { id: 5, name: "IT", color: "#3F51B5", tasks: 0, completed: 0 },
+                    { id: 6, name: "HR", color: "#00BCD4", tasks: 0, completed: 0 },
+                    { id: 7, name: "Юридический", color: "#795548", tasks: 0, completed: 0 },
+                    { id: 8, name: "Аналитика", color: "#607D8B", tasks: 0, completed: 0 },
+                    { id: 9, name: "Разработка", color: "#FF5722", tasks: 0, completed: 0 },
+                    { id: 10, name: "Дизайн", color: "#E91E63", tasks: 0, completed: 0 },
+                    { id: 11, name: "Консалтинг", color: "#8BC34A", tasks: 0, completed: 0 }
+                ];
+                this.data.lastUpdate = new Date().toISOString();
+                this.saveData();
+                this.renderAll();
+                this.showNotification("Данные сброшены к начальным значениям", "success");
+            },
+            
+            // Показать уведомление
+            showNotification(message, type = "info") {
+                const notification = document.getElementById('notification');
+                const notificationText = document.getElementById('notification-text');
+                
+                notificationText.textContent = message;
+                notification.className = `notification ${type} show`;
+                
+                // Автоматическое скрытие
+                setTimeout(() => {
+                    notification.classList.remove('show');
+                }, 3000);
+            }
+        };
+        
+        // Инициализация приложения при загрузке страницы
+        document.addEventListener('DOMContentLoaded', () => {
+            DevyatovApp.init();
+            
+            // Установка сегодняшней даты по умолчанию в поле дедлайна
+            const today = new Date();
+            const nextWeek = new Date(today);
+            nextWeek.setDate(today.getDate() + 7);
+            document.getElementById('task-deadline').valueAsDate = nextWeek;
+        });
+    </script>
+</body>
+</html>
